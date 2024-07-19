@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "id": "voicechatgroupmsg",
+  "version": "${version}",
+  "name": "VoiceChatGroupMsg",
+  "description": "",
+  "authors": [],
+  "contact": {
+    "repo": "https://github.com/lukas/VoiceChatGroupMsg"
+  },
+  "license": "MIT",
+  "icon": "assets/voicechatgroupmsg/icon.png",
+  "environment": "server",
+  "entrypoints": {
+    "server": [
+      "me.lukasabbe.voicechatgroupmsg.VoiceChatGroupMsg"
+    ],
+    "voicechat": [
+      "me.lukasabbe.voicechatgroupmsg.VoiceChatGroupMsg"
+    ]
+  },
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "fabric": "*",
+    "minecraft": "${minecraft_version}",
+    "voicechat": ">=${minecraft_version}-${voicechat_api_version}"
+  }
+}

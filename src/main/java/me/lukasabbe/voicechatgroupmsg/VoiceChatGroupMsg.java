@@ -44,7 +44,7 @@ public class VoiceChatGroupMsg implements DedicatedServerModInitializer, Voicech
     }
     public static boolean isPlayerInGroup(ServerPlayerEntity player, UUID groupID){
         try{
-            if(!API.getConnectionOf(player.getUuid()).isInGroup())return false;
+            if(!API.getConnectionOf(player.getUuid()).isInGroup()) return false;
             return API.getConnectionOf(player.getUuid()).getGroup().getId().equals(groupID);
 
         }catch (NullPointerException ignore){

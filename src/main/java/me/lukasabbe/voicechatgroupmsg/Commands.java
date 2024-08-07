@@ -17,13 +17,11 @@ import java.util.List;
 
 public class Commands {
     public static void CreateGroupMsgCommand(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess commandRegistryAccess, CommandManager.RegistrationEnvironment registrationEnvironment) {
-        dispatcher.register(
-                CommandManager
-                        .literal("msgvc")
-                        .then(
-                                CommandManager
-                                        .argument("message", MessageArgumentType.message())
-                                        .executes(Commands::runCommand)));
+        dispatcher.register(CommandManager
+                .literal("msgvc")
+                .then(CommandManager
+                        .argument("message", MessageArgumentType.message())
+                        .executes(Commands::runCommand)));
     }
 
     private static int runCommand(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
@@ -40,10 +38,16 @@ public class Commands {
         Group group = VoiceChatGroupMsg.getPlayerGroup(player);
         List<ServerPlayerEntity> players = VoiceChatGroupMsg.GroupPlayers(group.getId(), source.getWorld());
         MessageArgumentType.getSignedMessage(ctx, "message", signedMessage -> {
-            player.sendChatMessage(SentMessage.of(signedMessage),true, MessageType.params(MessageType.TEAM_MSG_COMMAND_OUTGOING,source).withTargetName(Text.of(group.getName())));
+            player.sendChatMessage(
+                    SentMessage.of(signedMessage),
+                    true,
+                    MessageType.params(MessageType.TEAM_MSG_COMMAND_OUTGOING,source).withTargetName(Text.of(group.getName())));
             players.forEach(player1 -> {
-                if(!player1.getUuid().equals(source.getPlayer().getUuid())){
-                    player1.sendChatMessage(SentMessage.of(signedMessage),true, MessageType.params(MessageType.TEAM_MSG_COMMAND_INCOMING,source).withTargetName(Text.of(group.getName())));
+                if(!player1.getUuid().equals(player.getUuid())){
+                    player1.sendChatMessage(
+                            SentMessage.of(signedMessage),
+                            true,
+                            MessageType.params(MessageType.TEAM_MSG_COMMAND_INCOMING,source).withTargetName(Text.of(group.getName())));
                 }
             });
         });

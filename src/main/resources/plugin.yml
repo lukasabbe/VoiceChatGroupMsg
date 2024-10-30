@@ -1,0 +1,10 @@
+name: VoiceChatGroupMsgPlugin
+version: '1.0+1.21'
+main: me.lukasabbe.voiceChatGroupMsgPlugin.VoiceChatGroupMsgPlugin
+api-version: '1.21'
+authors: [ Lukasabbe ]
+depend: [ voicechat ]
+commands:
+  msgvc:
+    description: Send a msg to the voicechat group you are in
+    usage: /<command> message

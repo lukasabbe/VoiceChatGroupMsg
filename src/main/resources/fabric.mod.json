@@ -2,11 +2,11 @@
   "schemaVersion": 1,
   "id": "voicechatgroupmsg",
   "version": "${version}",
-  "name": "VoiceChatGroupMsg",
-  "description": "",
-  "authors": [],
+  "name": "Voice Chat Group Msg",
+  "description": "Adds a way to message a whole group if you don't have a microphone. When you are in a group you can now use /msgvc <message>",
+  "authors": ["Lukasabbe"],
   "contact": {
-    "repo": "https://github.com/lukas/VoiceChatGroupMsg"
+    "repo": "https://github.com/lukasabbe/VoiceChatGroupMsg"
   },
   "license": "MIT",
   "icon": "assets/voicechatgroupmsg/icon.png",

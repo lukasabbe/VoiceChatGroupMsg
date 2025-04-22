@@ -16,7 +16,7 @@
       "me.lukasabbe.voicechatgroupmsg.VoiceChatGroupMsg"
     ],
     "voicechat": [
-      "me.lukasabbe.voicechatgroupmsg.VoiceChatGroupMsg"
+      "me.lukasabbe.voicechatgroupmsg.util.VoiceChatUtil"
     ]
   },
   "depends": {

@@ -10,7 +10,7 @@ import net.minecraft.command.argument.MessageArgumentType;
 import net.minecraft.network.message.MessageType;
 import net.minecraft.network.message.SentMessage;
 import net.minecraft.network.message.SignedMessage;
-import net.minecraft.registry.RegistryKey;
+import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -43,12 +43,12 @@ public class MsgVcCommand {
 
         List<ServerPlayerEntity> players = VoiceChatUtil.GroupPlayers(group.getId(), source.getWorld());
 
-        MessageArgumentType.getSignedMessage(ctx, "message", signedMessage -> {
-            sendMessage(player, signedMessage, MessageType.TEAM_MSG_COMMAND_OUTGOING, source, group);
-            players.forEach(voiceChatMember -> {
-                if(voiceChatMember.getUuid().equals(player.getUuid())) return;
-                sendMessage(voiceChatMember, signedMessage, MessageType.TEAM_MSG_COMMAND_INCOMING, source, group);
-            });
+        SignedMessage signedMessage = MessageArgumentType.getSignedMessage(ctx, "message").signedArgument();
+
+        sendMessage(player, signedMessage, MessageType.TEAM_MSG_COMMAND_OUTGOING, source, group);
+        players.forEach(voiceChatMember -> {
+            if(voiceChatMember.getUuid().equals(player.getUuid())) return;
+            sendMessage(voiceChatMember, signedMessage, MessageType.TEAM_MSG_COMMAND_INCOMING, source, group);
         });
         return 1;
     }

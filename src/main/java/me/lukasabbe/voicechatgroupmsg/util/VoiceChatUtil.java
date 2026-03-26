@@ -5,8 +5,8 @@ import de.maxhenkel.voicechat.api.VoicechatPlugin;
 import de.maxhenkel.voicechat.api.VoicechatServerApi;
 import de.maxhenkel.voicechat.api.events.EventRegistration;
 import de.maxhenkel.voicechat.api.events.VoicechatServerStartedEvent;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ServerWorld;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 
 import java.util.List;
 import java.util.UUID;
@@ -31,26 +31,26 @@ public class VoiceChatUtil implements VoicechatPlugin {
         API = event.getVoicechat();
     }
 
-    public static boolean isPlayerInGroup(ServerPlayerEntity player){
+    public static boolean isPlayerInGroup(ServerPlayer player){
         try{
-            return API.getConnectionOf(player.getUuid()).isInGroup();
+            return API.getConnectionOf(player.getUUID()).isInGroup();
         }catch (NullPointerException ignore){
             return false;
         }
     }
-    public static boolean isPlayerInGroup(ServerPlayerEntity player, UUID groupID){
+    public static boolean isPlayerInGroup(ServerPlayer player, UUID groupID){
         try{
-            if(!API.getConnectionOf(player.getUuid()).isInGroup()) return false;
-            return API.getConnectionOf(player.getUuid()).getGroup().getId().equals(groupID);
+            if(!API.getConnectionOf(player.getUUID()).isInGroup()) return false;
+            return API.getConnectionOf(player.getUUID()).getGroup().getId().equals(groupID);
 
         }catch (NullPointerException ignore){
             return false;
         }
     }
-    public static Group getPlayerGroup(ServerPlayerEntity player){
-        return API.getConnectionOf(player.getUuid()).getGroup();
+    public static Group getPlayerGroup(ServerPlayer player){
+        return API.getConnectionOf(player.getUUID()).getGroup();
     }
-    public static List<ServerPlayerEntity> GroupPlayers(UUID groupUUID, ServerWorld serverWorld){
+    public static List<ServerPlayer> GroupPlayers(UUID groupUUID, ServerLevel serverWorld){
         return serverWorld.getPlayers(player -> isPlayerInGroup(player, groupUUID));
     }
 }

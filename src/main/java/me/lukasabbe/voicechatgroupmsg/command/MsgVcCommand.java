@@ -5,60 +5,60 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import de.maxhenkel.voicechat.api.Group;
 import me.lukasabbe.voicechatgroupmsg.util.VoiceChatUtil;
-import net.minecraft.command.CommandRegistryAccess;
-import net.minecraft.command.argument.MessageArgumentType;
-import net.minecraft.network.message.MessageType;
-import net.minecraft.network.message.SentMessage;
-import net.minecraft.network.message.SignedMessage;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.server.command.CommandManager;
-import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.Text;
+import net.minecraft.commands.CommandBuildContext;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.Commands;
+import net.minecraft.commands.arguments.MessageArgument;
+import net.minecraft.network.chat.ChatType;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.OutgoingChatMessage;
+import net.minecraft.network.chat.PlayerChatMessage;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.server.level.ServerPlayer;
 
 import java.util.List;
 
 public class MsgVcCommand {
-    public static void CreateGroupMsgCommand(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess commandRegistryAccess, CommandManager.RegistrationEnvironment registrationEnvironment) {
+    public static void CreateGroupMsgCommand(CommandDispatcher<CommandSourceStack> dispatcher, CommandBuildContext commandRegistryAccess, Commands.CommandSelection registrationEnvironment) {
         dispatcher.register(
-                CommandManager
+                Commands
                         .literal("msgvc")
-                        .requires(ServerCommandSource::isExecutedByPlayer)
+                        .requires(CommandSourceStack::isPlayer)
                         .then(
-                                CommandManager
-                                        .argument("message", MessageArgumentType.message())
+                                Commands
+                                        .argument("message", MessageArgument.message())
                                         .executes(MsgVcCommand::runCommand)));
     }
 
-    private static int runCommand(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
-        final ServerCommandSource source = ctx.getSource();
+    private static int runCommand(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
+        final CommandSourceStack source = ctx.getSource();
 
-        final ServerPlayerEntity player = source.getPlayer();
+        final ServerPlayer player = source.getPlayer();
         if(!VoiceChatUtil.isPlayerInGroup(player)){
-            source.sendError(Text.literal("You need to be in a voice chat group to use this command"));
+            source.sendFailure(Component.literal("You need to be in a voice chat group to use this command"));
             return 0;
         }
 
         Group group = VoiceChatUtil.getPlayerGroup(player);
 
-        List<ServerPlayerEntity> players = VoiceChatUtil.GroupPlayers(group.getId(), source.getWorld());
+        List<ServerPlayer> players = VoiceChatUtil.GroupPlayers(group.getId(), source.getLevel());
 
-        MessageArgumentType.getSignedMessage(ctx, "message", signedMessage -> {
-            sendMessage(player, signedMessage, MessageType.TEAM_MSG_COMMAND_OUTGOING, source, group);
+        MessageArgument.resolveChatMessage(ctx, "message", signedMessage -> {
+            sendMessage(player, signedMessage, ChatType.TEAM_MSG_COMMAND_OUTGOING, source, group);
             players.forEach(voiceChatMember -> {
-                if(voiceChatMember.getUuid().equals(player.getUuid())) return;
-                sendMessage(voiceChatMember, signedMessage, MessageType.TEAM_MSG_COMMAND_INCOMING, source, group);
+                if(voiceChatMember.getUUID().equals(player.getUUID())) return;
+                sendMessage(voiceChatMember, signedMessage, ChatType.TEAM_MSG_COMMAND_INCOMING, source, group);
             });
         });
         return 1;
     }
 
-    private static void sendMessage(ServerPlayerEntity player, SignedMessage signedMessage, RegistryKey<MessageType> teamMsgCommandOutgoing, ServerCommandSource source, Group group) {
+    private static void sendMessage(ServerPlayer player, PlayerChatMessage signedMessage, ResourceKey<ChatType> teamMsgCommandOutgoing, CommandSourceStack source, Group group) {
         player.sendChatMessage(
-                SentMessage.of(signedMessage),
+                OutgoingChatMessage.create(signedMessage),
                 true,
-                MessageType.params(teamMsgCommandOutgoing, source)
-                        .withTargetName(Text.of(group.getName()))
+                ChatType.bind(teamMsgCommandOutgoing, source)
+                        .withTargetName(Component.nullToEmpty(group.getName()))
         );
     }
 }
